@@ -1,0 +1,30 @@
+body { font-family: sans-serif; text-align: center; }
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    gap: 5px;
+    background-color: #333;
+    padding: 5px;
+    width: max-content;
+    margin: 20px auto;
+    border-radius: 5px;
+}
+
+.tile {
+    width: 80px;
+    height: 80px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: transform 0.1s;
+}
+
+.tile:active { transform: scale(0.95); }
+.tile.empty { background-color: #333; cursor: default; }

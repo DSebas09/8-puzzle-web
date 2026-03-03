@@ -1,16 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>8-Puzzle IA</title>
-    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<h1>8-Puzzle</h1>
-<div id="boards">
-    <div id="board-player" class="board"></div>
-    <div id="board-ai" class="board"></div>
-</div>
-<script type="module" src="js/main.js"></script>
+<h1>8-Interactive Puzzle</h1>
+<p>Movements: <span id="moves-count">0</span></p>
+
+<div id="game-board" class="board"></div>
+
+<script type="module">
+    import { GOAL_NORMAL } from './js/state.js';
+    import { generateSolvableState, applyMove } from './js/game.js';
+    import { renderBoard, updateStats } from './js/ui.js';
+
+    const boardContainer = document.getElementById('game-board');
+    const movesCounter = document.getElementById('moves-count');
+
+    let currentState = generateSolvableState(GOAL_NORMAL, 15);
+    let moves = 0;
+
+    function update() {
+        renderBoard(currentState, boardContainer, (moveDirection) => {
+            const newState = applyMove(currentState, moveDirection);
+            if (newState) {
+                currentState = newState;
+                moves++;
+                updateStats(moves, 0, movesCounter, null);
+                update();
+            }
+        });
+    }
+
+    update();
+</script>
 </body>
 </html>
