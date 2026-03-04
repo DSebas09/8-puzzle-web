@@ -67,3 +67,11 @@ export function updateStats(moves, time, movesEl, timerEl) {
         timerEl.textContent = `${minutes}:${seconds}`;
     }
 }
+
+/**
+ * Renders the target state in a thumbnail (read-only).
+ * Reuses renderBoard but ensures no interactions.
+ */
+export function renderGoalPattern(goalState, container) {
+    renderBoard(goalState, container, null);
+}

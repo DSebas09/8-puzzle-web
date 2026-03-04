@@ -1,11 +1,12 @@
 import { GOAL_EASY, GOAL_NORMAL, GOAL_HARD } from './state.js';
 import { generateSolvableState, applyMove } from './game.js';
-import { renderBoard, updateStats } from './ui.js';
+import {renderBoard, renderGoalPattern, updateStats} from './ui.js';
 import { solvePuzzle } from './ai.js';
 
 
 const board1Container = document.getElementById('board-1');
 const board2Container = document.getElementById('board-2');
+const goalContainer = document.getElementById('goal-board');
 const stats1 = document.getElementById('stats-1');
 const stats2 = document.getElementById('stats-2');
 
@@ -29,6 +30,8 @@ function startGame() {
     else if (diff === 'hard') { currentGoal = GOAL_HARD; shuffleCount = 100; }
 
     gameMode = modeSelect.value;
+
+    renderGoalPattern(currentGoal, goalContainer);
 
     const initialState = generateSolvableState(currentGoal, shuffleCount);
     state1 = [...initialState];

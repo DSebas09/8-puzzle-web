@@ -11,6 +11,24 @@ body { font-family: sans-serif; text-align: center; }
     border-radius: 5px;
 }
 
+.mini-board {
+    grid-template-columns: repeat(3, 40px);
+    gap: 3px;
+    padding: 3px;
+    margin: 10px auto;
+}
+
+.mini-board .tile {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    cursor: default;
+}
+
+.mini-board .tile:active {
+    transform: none;
+}
+
 .tile {
     width: 80px;
     height: 80px;
