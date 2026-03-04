@@ -2,39 +2,46 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>8-Puzzle IA</title>
+    <title>8-Puzzle Game</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .game-area { display: flex; justify-content: center; gap: 50px; margin-top: 20px; }
+        .player-zone { text-align: center; }
+        .controls { text-align: center; margin: 20px; padding: 10px; background: #eee; }
+    </style>
 </head>
 <body>
-<h1>8-Interactive Puzzle</h1>
-<p>Movements: <span id="moves-count">0</span></p>
+<h1>8-Puzzle: Juego Interactivo</h1>
 
-<div id="game-board" class="board"></div>
+<div class="controls">
+    <select id="game-mode">
+        <option value="HvIA">Jugador vs AI</option>
+        <option value="HvH">Jugador vs Jugador</option>
+    </select>
 
-<script type="module">
-    import { GOAL_NORMAL } from './js/state.js';
-    import { generateSolvableState, applyMove } from './js/game.js';
-    import { renderBoard, updateStats } from './js/ui.js';
+    <select id="difficulty">
+        <option value="easy">Fácil</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Difícil</option>
+    </select>
 
-    const boardContainer = document.getElementById('game-board');
-    const movesCounter = document.getElementById('moves-count');
+    <button id="start-btn">Iniciar Juego</button>
+</div>
 
-    let currentState = generateSolvableState(GOAL_NORMAL, 15);
-    let moves = 0;
+<div class="game-area">
+    <div class="player-zone">
+        <h2>Jugador 1</h2>
+        <p>Movimientos: <span id="stats-1">0</span></p>
+        <div id="board-1" class="board"></div>
+    </div>
 
-    function update() {
-        renderBoard(currentState, boardContainer, (moveDirection) => {
-            const newState = applyMove(currentState, moveDirection);
-            if (newState) {
-                currentState = newState;
-                moves++;
-                updateStats(moves, 0, movesCounter, null);
-                update();
-            }
-        });
-    }
+    <div class="player-zone">
+        <h2>Jugador 2 / IA</h2>
+        <p>Movimientos: <span id="stats-2">0</span></p>
+        <div id="board-2" class="board"></div>
+    </div>
+</div>
 
-    update();
-</script>
+<script type="module" src="js/main.js"></script>
 </body>
 </html>
