@@ -9,8 +9,8 @@ export const getMisplacedTilesCount = (state, goalState) =>
 
 /** Manhattan distance: sum of row+col distances per non-blank tile. */
 export function getManhattanDistance(state, goalState) {
-    // Build a tile→index map once per call instead of indexOf on every tile
-    const goalPos = goalState.reduce((map, tile, i) => ((map[tile] = i), map), {});
+    const goalPos = Object.fromEntries(goalState.map((tile, i) => [tile, i]));
+
     return state.reduce((sum, tile, i) => {
         if (tile === 0) return sum;
         const gi = goalPos[tile];
