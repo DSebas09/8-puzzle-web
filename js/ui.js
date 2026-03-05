@@ -3,57 +3,88 @@
 import { getBlankIndex } from './state.js';
 import { MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT } from './game.js';
 
+// Same lookup pattern as MOVE_DELTA in game.js
+const DELTA_TO_MOVE = {
+    [-3]: MOVE_UP,
+    [3]:  MOVE_DOWN,
+    [-1]: MOVE_LEFT,
+    [1]:  MOVE_RIGHT,
+};
+
+
 /**
  * Renders the current state of the board in an HTML container.
- *
+ * Use DocumentFragment for a single DOM reflow.
  * @param {number[]} state - The current array of the board.
  * @param {HTMLElement} container - The div where the board will be drawn.
- * @param {Function} onMoveCallback - Function to execute when the user makes a valid move.
+ * @param {Function} onMove - Function to execute when the user makes a valid move.
  */
-export function renderBoard(state, container, onMoveCallback) {
-    container.innerHTML = '';
+export function renderBoard(state, container, onMove) {
     const blankIdx = getBlankIndex(state);
-
-    state.forEach((tileValue, index) => {
-        const tile = document.createElement('div');
-        tile.classList.add('tile');
-
-        if (tileValue === 0) {
-            tile.classList.add('empty');
-        } else {
-            tile.textContent = tileValue;
-
-            // Click event: if the touched tile is adjacent to 0, try to move
-            tile.addEventListener('click', () => {
-                const moveDirection = getMoveFromClick(index, blankIdx);
-                if (moveDirection && onMoveCallback) {
-                    onMoveCallback(moveDirection);
-                }
-            });
-        }
-        container.appendChild(tile);
-    });
+    const fragment = document.createDocumentFragment();
+    state.forEach((value, index) =>
+        fragment.appendChild(createTile(value, index, blankIdx, onMove))
+    );
+    container.innerHTML = '';
+    container.appendChild(fragment);
 }
 
 /**
  * Calculates which move ('up', 'down', 'left', 'right') a tile click represents.
- *
  * @param {number} clickedIdx - Index of the clicked tile (0-8)
  * @param {number} blankIdx - Index of the empty space (0-8)
  * @returns {string | null} The resulting move, or null if they are not adjacent.
  */
 function getMoveFromClick(clickedIdx, blankIdx) {
-    if (clickedIdx === blankIdx - 3) return MOVE_UP;
-    if (clickedIdx === blankIdx + 3) return MOVE_DOWN;
-    if (clickedIdx === blankIdx - 1 && blankIdx % 3 !== 0) return MOVE_LEFT;
-    if (clickedIdx === blankIdx + 1 && (blankIdx + 1) % 3 !== 0) return MOVE_RIGHT;
+    const diff = clickedIdx - blankIdx;
+    const col  = blankIdx % 3;
+    if (diff === -1 && col === 0) return null; // Avoid left wrap-around
+    if (diff ===  1 && col === 2) return null; // Avoid right wrap-around
+    return DELTA_TO_MOVE[diff] ?? null;
+}
 
-    return null; // Invalid click (non-adjacent tile)
+/**
+ * @param {number} seconds
+ * @returns {string} MM:SS format
+ */
+function formatTime(seconds) {
+    const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const ss = String(seconds % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+}
+
+/**
+ * Create an individual tile element.
+ * Only register the click if a callback is provided (interactive tiles).
+ * @param {number} value
+ * @param {number} index
+ * @param {number} blankIdx
+ * @param {Function|null} onMove
+ * @returns {HTMLElement}
+ */
+function createTile(value, index, blankIdx, onMove) {
+    const tile = document.createElement('div');
+    tile.classList.add('tile');
+
+    if (value === 0) {
+        tile.classList.add('empty');
+        return tile;
+    }
+
+    tile.textContent = value;
+
+    if (onMove) {
+        tile.addEventListener('click', () => {
+            const move = getMoveFromClick(index, blankIdx);
+            if (move) onMove(move);
+        });
+    }
+
+    return tile;
 }
 
 /**
  * Updates the on-screen statistics text.
- *
  * @param {number} moves - Number of moves performed
  * @param {number} time - Elapsed time in seconds
  * @param {HTMLElement} movesEl - DOM element for moves
@@ -61,11 +92,7 @@ function getMoveFromClick(clickedIdx, blankIdx) {
  */
 export function updateStats(moves, time, movesEl, timerEl) {
     if (movesEl) movesEl.textContent = moves;
-    if (timerEl) {
-        const minutes = String(Math.floor(time / 60)).padStart(2, '0');
-        const seconds = String(time % 60).padStart(2, '0');
-        timerEl.textContent = `${minutes}:${seconds}`;
-    }
+    if (timerEl) timerEl.textContent = formatTime(time);
 }
 
 /**
