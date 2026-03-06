@@ -3,11 +3,11 @@
 import { isGoal } from './state.js';
 import { getValidMoves, applyMove } from './game.js';
 
-/** Misplaced tiles: non-blank tiles not in their goal position. */
+/** Misplaced tiles: non-blank tiles not in their goal position. (easy mode) */
 export const getMisplacedTilesCount = (state, goalState) =>
     state.reduce((n, tile, i) => n + (tile !== 0 && tile !== goalState[i] ? 1 : 0), 0);
 
-/** Manhattan distance: sum of row+col distances per non-blank tile. */
+/** Manhattan distance: sum of row+col distances per non-blank tile (normal/hard mode). */
 export function getManhattanDistance(state, goalState) {
     const goalPos = Object.fromEntries(goalState.map((tile, i) => [tile, i]));
 
